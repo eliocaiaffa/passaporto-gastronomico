@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Passaporto Gastronomico</title>
+<meta name="description" content="Il club delle cene etniche, ogni 15 giorni: ospiti, estrazione nazioni, menù, lista della spesa divisa e conti.">
+<meta name="theme-color" content="#5c1426">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Passaporto">
+<meta property="og:title" content="Passaporto Gastronomico 🛂🍽️">
+<meta property="og:description" content="Il club delle cene etniche: segna se ci sei, scegli i piatti, spunta la spesa e dividi i conti in tempo reale.">
+<meta property="og:type" content="website">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: copertina del passaporto in alto, poi le "pagine" bianche su carta filigranata; i paesi sono timbri visto, lo storico è una pagina di timbri. */
+:root {
+  --paper: #eef0f5;
+  --page: #ffffff;
+  --ink: #1b2036;
+  --muted: #5d6480;
+  --line: #dcdfe9;
+  --cover: #5c1426;
+  --cover-2: #7a1c33;
+  --gold: #e9d39b;
+  --accent: #a3213d;
+  --accent-soft: #f7e7eb;
+  --ok: #2f7a5b;
+  --ok-soft: #e3f2ea;
+  --stamp-1: #2d5aa6;
+  --stamp-2: #2f7a5b;
+  --stamp-3: #6a3fa0;
+  --stamp-4: #a3213d;
+  --shadow: 0 1px 2px rgba(27, 32, 54, .06), 0 6px 20px -10px rgba(27, 32, 54, .18);
+  --f-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --f-body: "Figtree", "Segoe UI", system-ui, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+  --r: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #11131b; --page: #1a1d29; --ink: #e8eaf3; --muted: #9ba1ba; --line: #2c3043;
+    --cover: #3f0c19; --cover-2: #571326; --gold: #e6cf93; --accent: #f07390; --accent-soft: #3a1c27;
+    --ok: #6fcf9f; --ok-soft: #173327;
+    --stamp-1: #7ea6f0; --stamp-2: #6fcf9f; --stamp-3: #b592ea; --stamp-4: #f07390;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #11131b; --page: #1a1d29; --ink: #e8eaf3; --muted: #9ba1ba; --line: #2c3043;
+  --cover: #3f0c19; --cover-2: #571326; --gold: #e6cf93; --accent: #f07390; --accent-soft: #3a1c27;
+  --ok: #6fcf9f; --ok-soft: #173327;
+  --stamp-1: #7ea6f0; --stamp-2: #6fcf9f; --stamp-3: #b592ea; --stamp-4: #f07390;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.6);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  background-image: repeating-radial-gradient(circle at 20% 0%, transparent 0 22px, color-mix(in srgb, var(--line) 35%, transparent) 22px 23px);
+  color: var(--ink);
+  font-family: var(--f-body);
+  font-size: 15px;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+button, input { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+h1, h2, h3, h4 { font-family: var(--f-display); text-wrap: balance; margin: 0; letter-spacing: -.01em; }
+.wrap { max-width: 920px; margin: 0 auto; padding-inline: 16px; }
+.mono { font-family: var(--f-mono); font-variant-numeric: tabular-nums; }
+.label { font-family: var(--f-mono); font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+
+/* Copertina */
+.cover {
+  background: radial-gradient(120% 140% at 85% 0%, var(--cover-2), var(--cover));
+  color: var(--gold);
+  padding-block: calc(22px + env(safe-area-inset-top, 0px)) 18px;
+  position: relative;
+  overflow: hidden;
+}
+.cover::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none; opacity: .14;
+  background: repeating-conic-gradient(from 0deg at 92% 30%, var(--gold) 0 1deg, transparent 1deg 7deg);
+  -webkit-mask: radial-gradient(circle at 92% 30%, #000 0 120px, transparent 260px);
+  mask: radial-gradient(circle at 92% 30%, #000 0 120px, transparent 260px);
+}
+.cover-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; position: relative; }
+.cover .eyebrow { font-family: var(--f-mono); font-size: 11px; letter-spacing: .22em; opacity: .85; }
+.cover h1 { font-size: clamp(28px, 6vw, 42px); font-weight: 800; line-height: 1.02; margin-top: 6px; color: var(--gold); }
+.cover p { margin: 6px 0 0; color: color-mix(in srgb, var(--gold) 80%, white); font-size: 14px; }
+.emblem { width: 52px; height: 52px; flex: none; }
+.mrz { margin-top: 14px; font-family: var(--f-mono); font-size: 12px; letter-spacing: .12em; color: color-mix(in srgb, var(--gold) 70%, transparent); white-space: nowrap; overflow: hidden; text-overflow: clip; position: relative; }
+.sync { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,.1); border: 1px solid rgba(233,211,155,.35); color: var(--gold); transition: background .15s; }
+.sync:hover { background: rgba(255,255,255,.18); }
+.sync .dot { width: 8px; height: 8px; border-radius: 50%; background: #9aa0b8; flex: none; }
+.sync.live .dot { background: #6fdc9f; box-shadow: 0 0 0 3px rgba(111,220,159,.25); }
+
+/* Barra azioni copertina (Condividi con amici / Stanza / Tema) */
+.cover-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 14px; position: relative; }
+.cover-btn {
+  border: 1px solid rgba(233,211,155,.38); background: rgba(255,255,255,.1); color: var(--gold);
+  padding: 7px 13px; border-radius: 10px; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 7px;
+  transition: background .15s, transform .1s;
+}
+.cover-btn:hover { background: rgba(255,255,255,.2); }
+.cover-btn.wa { background: #228b57; border-color: #36b374; color: #fff; }
+.cover-btn.wa:hover { filter: brightness(1.08); }
+.room-drawer {
+  margin-top: 12px; padding: 14px; border-radius: 12px; background: rgba(0,0,0,.28);
+  border: 1px solid rgba(233,211,155,.3); color: var(--gold); position: relative;
+  display: grid; gap: 10px; font-size: 13px;
+}
+.room-drawer .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.room-drawer input {
+  background: rgba(255,255,255,.12); border: 1px solid rgba(233,211,155,.4); color: #fff;
+  border-radius: 8px; padding: 7px 10px; font-family: var(--f-mono); font-size: 13px; flex: 1; min-width: 160px;
+}
+.room-drawer input::placeholder { color: rgba(233,211,155,.6); }
+
+/* Tab */
+.tabs { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: color-mix(in srgb, var(--paper) 88%, transparent); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.tabs .wrap { display: flex; gap: 4px; padding-block: 8px; overflow-x: auto; }
+.tab { flex: 1 0 auto; border: 0; background: transparent; padding: 9px 14px; border-radius: 10px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.tab[aria-selected="true"] { background: var(--page); color: var(--ink); box-shadow: var(--shadow); }
+.tab .count { font-family: var(--f-mono); font-size: 11px; margin-left: 4px; padding: 1px 6px; border-radius: 6px; background: var(--accent-soft); color: var(--accent); }
+
+main { padding-block: 20px 80px; display: grid; gap: 18px; }
+.page { background: var(--page); border: 1px solid var(--line); border-radius: var(--r); padding: 20px; box-shadow: var(--shadow); min-width: 0; }
+.page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 14px; }
+.page-head h2 { font-size: 21px; font-weight: 800; }
+.page-head p { margin: 2px 0 0; color: var(--muted); font-size: 13px; max-width: 60ch; }
+.step { font-family: var(--f-mono); font-size: 11px; font-weight: 700; color: var(--accent); letter-spacing: .1em; }
+
+.btn { border: 1px solid var(--line); background: var(--page); padding: 9px 14px; border-radius: 10px; font-weight: 600; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; }
+.btn:hover { border-color: var(--muted); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary:hover { filter: brightness(1.08); }
+.btn.ghost { border-color: transparent; background: transparent; color: var(--muted); padding-inline: 8px; }
+.btn.ghost:hover { color: var(--accent); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn.big { width: 100%; justify-content: center; padding: 14px; font-size: 16px; font-family: var(--f-display); font-weight: 800; }
+
+.field { display: grid; gap: 6px; min-width: 0; }
+.input { width: 100%; border: 1px solid var(--line); background: var(--paper); border-radius: 10px; padding: 10px 12px; font-size: 14px; }
+.input:focus { outline: none; border-color: var(--accent); background: var(--page); }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+
+/* Amici */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.chip { display: inline-flex; align-items: stretch; border-radius: 999px; border: 1px solid var(--line); background: var(--paper); overflow: hidden; font-weight: 600; font-size: 14px; }
+.chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.chip > button { border: 0; background: transparent; padding: 7px 6px 7px 14px; display: inline-flex; align-items: center; gap: 6px; }
+.chip > .x { padding: 7px 11px 7px 6px; opacity: .6; font-size: 16px; line-height: 1; }
+.chip > .x:hover { opacity: 1; }
+.chip.confirm { background: var(--accent-soft); border-color: var(--accent); color: var(--ink); }
+.chip.confirm span { padding: 7px 4px 7px 14px; }
+.chip.confirm button { padding: 7px 10px; font-weight: 700; }
+.chip.confirm .yes { color: var(--accent); }
+.add-row { display: flex; gap: 8px; margin-top: 12px; }
+.add-row .input { flex: 1; min-width: 0; }
+.people { font-family: var(--f-mono); font-size: 12px; font-weight: 700; padding: 5px 10px; border-radius: 8px; background: var(--accent-soft); color: var(--accent); }
+
+/* Timbri nazioni */
+.visas { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.visa {
+  position: relative; text-align: left; border: 2px dashed color-mix(in srgb, var(--c) 55%, transparent);
+  background: color-mix(in srgb, var(--c) 6%, var(--page)); border-radius: 18px; padding: 16px; display: grid; gap: 6px;
+  transition: transform .2s ease, border-color .2s;
+}
+.visa:nth-child(1) { --c: var(--stamp-1); }
+.visa:nth-child(2) { --c: var(--stamp-2); }
+.visa:nth-child(3) { --c: var(--stamp-3); }
+.visa:hover { transform: rotate(-1deg) translateY(-2px); border-color: var(--c); }
+.visa.on { border-style: solid; border-color: var(--c); box-shadow: inset 0 0 0 3px color-mix(in srgb, var(--c) 18%, transparent); }
+.visa .flag { font-size: 40px; line-height: 1; }
+.visa h3 { font-size: 20px; font-weight: 800; color: var(--c); }
+.visa p { margin: 0; font-size: 13px; color: var(--muted); }
+.visa .meta { font-family: var(--f-mono); font-size: 11px; font-weight: 700; color: var(--c); letter-spacing: .06em; text-transform: uppercase; margin-top: 4px; }
+.visa .seal { position: absolute; top: 12px; right: 12px; font-family: var(--f-mono); font-size: 10px; font-weight: 700; letter-spacing: .12em; color: var(--c); border: 2px solid var(--c); padding: 3px 7px; border-radius: 6px; transform: rotate(8deg); }
+.progress { display: flex; align-items: center; gap: 10px; margin-top: 14px; font-size: 13px; color: var(--muted); }
+.bar { flex: 1; height: 6px; border-radius: 6px; background: var(--line); overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); border-radius: 6px; }
+
+/* Piatti */
+.filters { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin-bottom: 12px; }
+.filter { border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 5px 12px; font-size: 13px; font-weight: 600; color: var(--muted); white-space: nowrap; }
+.filter.on { background: var(--ink); color: var(--page); border-color: var(--ink); }
+.dishes { display: grid; gap: 10px; }
+.dish { border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; background: var(--page); }
+.dish.on { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 5%, var(--page)); }
+.tick { grid-row: span 3; width: 26px; height: 26px; border-radius: 8px; border: 2px solid var(--line); background: var(--page); display: grid; place-items: center; color: #fff; margin-top: 2px; }
+.dish.on .tick { background: var(--accent); border-color: var(--accent); }
+.dish-top { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; align-items: baseline; min-width: 0; }
+.dish h4 { font-size: 16px; font-weight: 800; cursor: pointer; }
+.cat { font-family: var(--f-mono); font-size: 10.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.ings { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
+.ing { font-size: 12.5px; padding: 3px 8px; border-radius: 6px; background: var(--paper); border: 1px solid var(--line); }
+.ing b { font-family: var(--f-mono); font-weight: 700; color: var(--accent); font-size: 12px; }
+.how { border: 0; background: none; padding: 0; color: var(--accent); font-weight: 600; font-size: 13px; justify-self: start; }
+.steps { margin: 4px 0 0; font-size: 14px; color: var(--muted); max-width: 70ch; }
+
+/* Spesa */
+.shop { display: grid; }
+.shop label { display: flex; align-items: center; gap: 12px; padding: 10px 4px; border-bottom: 1px dashed var(--line); cursor: pointer; }
+.shop label:last-child { border-bottom: 0; }
+.shop input { width: 18px; height: 18px; accent-color: var(--accent); flex: none; }
+.shop .name { flex: 1; min-width: 0; }
+.shop .qty { font-family: var(--f-mono); font-weight: 700; font-size: 13px; color: var(--accent); white-space: nowrap; }
+.shop label.done .name, .shop label.done .qty { text-decoration: line-through; color: var(--muted); }
+
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 10px; padding: 3px; background: var(--paper); }
+.seg button { border: 0; background: transparent; padding: 6px 12px; border-radius: 7px; font-weight: 600; font-size: 13px; color: var(--muted); }
+.seg button.on { background: var(--page); color: var(--ink); box-shadow: var(--shadow); }
+.buyers { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 14px; }
+.buyer { border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: grid; gap: 6px; align-content: start; min-width: 0; }
+.buyer-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; padding-bottom: 8px; border-bottom: 2px solid var(--accent); }
+.buyer-head h3 { font-size: 18px; font-weight: 800; }
+.buyer-head .mono { font-size: 12px; font-weight: 700; color: var(--accent); }
+.buy-row { display: grid; grid-template-columns: 1fr auto; gap: 2px 8px; align-items: center; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+.buy-row:last-of-type { border-bottom: 0; }
+.buy-row label { display: flex; gap: 10px; align-items: center; cursor: pointer; min-width: 0; }
+.buy-row input { width: 18px; height: 18px; accent-color: var(--accent); flex: none; }
+.buy-row .qty { font-family: var(--f-mono); font-weight: 700; font-size: 12.5px; color: var(--accent); white-space: nowrap; }
+.buy-row.done .name, .buy-row.done .qty { text-decoration: line-through; color: var(--muted); }
+.buy-row select { grid-column: 1 / -1; justify-self: start; margin-left: 28px; font: inherit; font-size: 12px; color: var(--muted); background: transparent; border: 0; padding: 0; cursor: pointer; }
+.buy-row select:hover { color: var(--accent); }
+.hint { font-size: 12.5px; color: var(--muted); margin: 12px 0 0; }
+.exp { display: grid; gap: 8px; }
+.exp-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 12px; border-radius: 10px; background: var(--paper); }
+.exp-row .money { display: flex; align-items: center; gap: 6px; }
+.exp-row input { width: 110px; text-align: right; font-family: var(--f-mono); font-weight: 700; }
+.totals { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 14px; padding: 16px; border-radius: 12px; border: 1px solid var(--line); background: var(--accent-soft); }
+.totals .v { font-family: var(--f-display); font-size: 28px; font-weight: 800; font-variant-numeric: tabular-nums; }
+.settle { display: grid; gap: 6px; margin-top: 12px; }
+.settle div { padding: 9px 12px; border-radius: 10px; border: 1px solid var(--line); font-size: 14px; }
+.settle b { font-family: var(--f-mono); }
+
+.stars { display: flex; gap: 4px; align-items: center; }
+.stars button { border: 0; background: none; font-size: 28px; line-height: 1; padding: 2px; color: var(--line); }
+.stars button.on { color: #e3a21a; }
+
+/* Storico */
+.stamps { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.stamp { border: 2px solid var(--c); border-radius: 16px; padding: 16px; display: grid; gap: 8px; position: relative; background: color-mix(in srgb, var(--c) 5%, var(--page)); min-width: 0; }
+.stamp:nth-child(4n+1) { --c: var(--stamp-1); transform: rotate(-.8deg); }
+.stamp:nth-child(4n+2) { --c: var(--stamp-2); transform: rotate(.6deg); }
+.stamp:nth-child(4n+3) { --c: var(--stamp-3); transform: rotate(-.4deg); }
+.stamp:nth-child(4n+4) { --c: var(--stamp-4); transform: rotate(.9deg); }
+.stamp-head { display: flex; gap: 10px; align-items: center; }
+.stamp .flag { font-size: 34px; }
+.stamp h3 { font-size: 19px; font-weight: 800; color: var(--c); }
+.stamp .date { font-family: var(--f-mono); font-size: 11px; font-weight: 700; letter-spacing: .1em; color: var(--c); text-transform: uppercase; }
+.stamp p { margin: 0; font-size: 13.5px; }
+.stamp .note { font-style: italic; color: var(--muted); }
+.stamp-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; border-top: 1px dashed color-mix(in srgb, var(--c) 40%, transparent); padding-top: 8px; font-size: 13px; }
+.stamp-foot .mono { font-weight: 700; }
+.rating { color: #e3a21a; letter-spacing: 2px; }
+
+.empty { text-align: center; color: var(--muted); padding: 28px 12px; font-size: 14px; }
+.banner { padding: 10px 14px; border-radius: 10px; font-size: 13.5px; background: var(--accent-soft); border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent); }
+.inline-confirm { display: inline-flex; gap: 6px; align-items: center; font-size: 13px; flex-wrap: wrap; }
+
+.toast { position: fixed; left: 50%; bottom: calc(20px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%) translateY(20px); background: var(--ink); color: var(--page); padding: 10px 16px; border-radius: 10px; font-size: 14px; font-weight: 600; opacity: 0; pointer-events: none; transition: .25s; z-index: 50; max-width: calc(100% - 32px); text-align: center; }
+.toast.show { opacity: 1; transform: translateX(-50%); }
+
+@media (max-width: 520px) {
+  .page { padding: 16px; }
+  .exp-row input { width: 90px; }
+  .stamp { transform: none !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+  .visa:hover { transform: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <div class="wrap">
+    <div class="cover-row">
+      <div>
+        <div class="eyebrow">REPUBBLICA DEI BUONGUSTAI · PASSAPORTO</div>
+        <h1>Passaporto Gastronomico</h1>
+        <p>Il club delle cene etniche, ogni 15 giorni</p>
+      </div>
+      <div style="display:grid; gap:8px; justify-items:end">
+        <div style="display:flex; gap:8px; align-items:center">
+          <button class="cover-btn" id="themeBtn" title="Cambia tema chiaro/scuro" aria-label="Cambia tema" style="padding:6px 10px">🌓</button>
+          <svg class="emblem" viewBox="0 0 64 64" aria-hidden="true">
+            <circle cx="32" cy="32" r="29" fill="none" stroke="currentColor" stroke-width="2"/>
+            <circle cx="32" cy="32" r="22" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3"/>
+            <path d="M22 20v10a4 4 0 0 0 8 0V20M26 20v24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M40 20c-3 0-4 5-4 9s1.5 5 4 5v10" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <button class="sync" id="sync" type="button" title="Stato sincronizzazione e impostazioni gruppo">
+          <span class="dot"></span><span id="syncText">Collegamento…</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="cover-actions">
+      <button class="cover-btn wa" id="shareWaBtn" type="button">📲 Invia al gruppo WhatsApp</button>
+      <button class="cover-btn" id="copyLinkBtn" type="button">🔗 Copia link passaporto</button>
+      <button class="cover-btn" id="roomToggleBtn" type="button">🔑 Gruppo: <span class="mono" id="roomLabel">club-buongustai</span></button>
+      <button class="cover-btn" id="installPwaBtn" type="button" hidden>⬇️ Installa sul telefono</button>
+    </div>
+
+    <div class="room-drawer" id="roomDrawer" hidden>
+      <div><b>Sincronizzazione in tempo reale tra amici</b> — Tutti coloro che aprono il link con lo stesso <b>Codice Gruppo</b> vedono e modificano in diretta ospiti, menù, spunte della spesa, conti e timbri.</div>
+      <div class="row">
+        <input id="roomInput" type="text" placeholder="Codice del gruppo (es. club-buongustai)" autocomplete="off">
+        <button class="cover-btn" id="saveRoomBtn" type="button">Cambia gruppo</button>
+        <button class="cover-btn" id="forceSyncBtn" type="button">🔄 Sincronizza ora</button>
+      </div>
+      <div style="font-size:12px; opacity:.85">💡 <b>Consiglio per iPhone e Android:</b> apri il link in Safari o Chrome e scegli <i>"Aggiungi alla schermata Home"</i> per averla come una vera app sul telefono.</div>
+    </div>
+
+    <div class="mrz" id="mrz">P&lt;ITA&lt;&lt;CENE&lt;ETNICHE&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Sezioni">
+  <div class="wrap" role="tablist">
+    <button class="tab" role="tab" id="tab-plan" data-tab="plan" aria-selected="true">Nuova cena</button>
+    <button class="tab" role="tab" id="tab-shop" data-tab="shop" aria-selected="false">Spesa e conti</button>
+    <button class="tab" role="tab" id="tab-history" data-tab="history" aria-selected="false">Timbri <span class="count" id="historyCount">0</span></button>
+  </div>
+</nav>
+
+<main class="wrap">
+  <div class="banner" id="readonlyBanner" hidden>Puoi vedere tutto, ma non modificare. Chiedi a chi gestisce il passaporto di invitarti come Editor.</div>
+
+  <!-- NUOVA CENA -->
+  <section id="sec-plan" style="display:grid; gap:18px">
+    <div class="page">
+      <div class="page-head">
+        <div>
+          <div class="step">PAGINA 1 · OSPITI</div>
+          <h2>Chi c'è a cena e dove</h2>
+          <p>Tocca un nome per segnarlo presente o assente: le dosi si ricalcolano da sole. Con la × lo togli dal gruppo.</p>
+        </div>
+        <span class="people" id="peopleBadge">0 presenti</span>
+      </div>
+      <div class="grid-2">
+        <label class="field"><span class="label">Data della cena</span><input class="input" type="date" id="dinnerDate"></label>
+        <label class="field"><span class="label">A casa di</span><input class="input" type="text" id="dinnerHost" placeholder="Es. casa di Elio"></label>
+      </div>
+      <div class="chips" id="friends"></div>
+      <form class="add-row" id="addFriendForm">
+        <input class="input" id="newFriend" placeholder="Aggiungi un amico al gruppo" autocomplete="off">
+        <button class="btn" type="submit">Aggiungi</button>
+      </form>
+    </div>
+
+    <div class="page">
+      <div class="page-head">
+        <div>
+          <div class="step">PAGINA 2 · VISTI</div>
+          <h2>Dove si va questa volta</h2>
+          <p>Tre nazioni estratte tra quelle non ancora timbrate. Le due scartate restano in gioco per la prossima.</p>
+        </div>
+        <button class="btn primary" id="drawBtn">Estrai 3 nazioni</button>
+      </div>
+      <div class="visas" id="visas"></div>
+      <div class="progress"><span class="mono" id="progressText">0/12</span><span class="bar"><i id="progressBar" style="width:0"></i></span><span>nazioni timbrate</span></div>
+    </div>
+
+    <div class="page" id="menuPage" hidden>
+      <div class="page-head">
+        <div>
+          <div class="step">PAGINA 3 · MENÙ</div>
+          <h2 id="menuTitle">Menù</h2>
+          <p>Scegli i piatti da cucinare. Le quantità sono già per <b id="menuPeople">0</b> persone.</p>
+        </div>
+        <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap">
+          <span class="people" id="dishCount">0 scelti</span>
+          <button class="btn ghost" id="selectAll">Tutti</button>
+          <button class="btn ghost" id="selectNone">Nessuno</button>
+        </div>
+      </div>
+      <div class="filters" id="filters"></div>
+      <div class="dishes" id="dishes"></div>
+    </div>
+  </section>
+
+  <!-- SPESA E CONTI -->
+  <section id="sec-shop" style="display:grid; gap:18px" hidden>
+    <div class="page">
+      <div class="page-head">
+        <div>
+          <div class="step">LISTA DELLA SPESA</div>
+          <h2 id="shopTitle">Cosa comprare</h2>
+          <p>Dosi per <b id="shopPeople">0</b> persone, arrotondate a quello che si compra davvero. La spesa è già divisa tra i presenti: spunta quello che hai preso e lo vedono tutti.</p>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center">
+          <div class="seg" role="group" aria-label="Vista"><button data-view="persone">Per persona</button><button data-view="unica">Lista unica</button></div>
+          <button class="btn" id="copyShop">Copia per WhatsApp</button>
+        </div>
+      </div>
+      <div id="shop"></div>
+      <p class="hint" id="shopHint" hidden>La divisione usa una stima indicativa dei prezzi, così a ognuno tocca più o meno la stessa cifra. Per spostare un ingrediente a un'altra persona usa il menu sotto il nome. I conti veri si fanno qui sotto con gli scontrini.</p>
+    </div>
+
+    <div class="page">
+      <div class="page-head">
+        <div>
+          <div class="step">CONTI</div>
+          <h2>Chi ha pagato cosa</h2>
+          <p>Scrivi quanto ha speso ognuno: l'app calcola la quota e chi deve dare soldi a chi.</p>
+        </div>
+      </div>
+      <div class="exp" id="expenses"></div>
+      <div class="totals">
+        <div><div class="label">Totale speso</div><div class="v">€ <span id="total">0,00</span></div></div>
+        <div><div class="label">Quota a testa</div><div class="v" style="color:var(--accent)">€ <span id="perHead">0,00</span></div></div>
+      </div>
+      <div class="settle" id="settle"></div>
+    </div>
+
+    <div class="page">
+      <div class="page-head">
+        <div>
+          <div class="step">TIMBRO</div>
+          <h2>Chiudi la serata</h2>
+          <p>Dai un voto, scrivi una nota e timbra il passaporto: la nazione esce dalle prossime estrazioni.</p>
+        </div>
+      </div>
+      <div style="display:grid; gap:14px">
+        <div class="field"><span class="label">Voto della serata</span><div class="stars" id="stars"></div></div>
+        <label class="field"><span class="label">Note o piatto migliore</span><input class="input" id="dinnerNotes" placeholder="Es. Pad Thai clamoroso, la prossima volta meno peperoncino"></label>
+        <button class="btn primary big" id="saveDinner">Timbra il passaporto</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- STORICO -->
+  <section id="sec-history" hidden>
+    <div class="page">
+      <div class="page-head">
+        <div>
+          <div class="step">TIMBRI</div>
+          <h2>Le nazioni che abbiamo visitato</h2>
+          <p>Chi c'era, cosa avete cucinato, quanto avete speso e il voto.</p>
+        </div>
+        <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center">
+          <span id="unlockArea"><button class="btn ghost" id="unlockBtn">Rimetti in gioco tutte le nazioni</button></span>
+          <button class="btn ghost" id="exportBtn" title="Salva copia di backup dei timbri">Esporta backup</button>
+          <button class="btn ghost" id="importBtn" title="Ripristina backup da file">Importa</button>
+          <input type="file" id="importFile" accept=".json,application/json" hidden>
+        </div>
+      </div>
+      <div class="stamps" id="stamps"></div>
+    </div>
+  </section>
+</main>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="recipes.js"></script>
+<script>
+// ---------- Dati ----------
+const COUNTRIES = window.CUISINES.map(c => ({
+  ...c,
+  dishes: c.dishes.map(([category, name, time, steps, ings], i) => ({
+    id: `${c.id}_${i + 1}`, category, name, time, steps,
+    ingredients: ings.map(([n, q, u]) => ({ name: n, qty: q, unit: u }))
+  }))
+}));
+const byId = id => COUNTRIES.find(c => c.id === id);
+
+const EMPTY = {
+  friends: [], active: [], excluded: [], proposals: [], country: null, dishes: [],
+  host: "", date: "", expenses: {}, bought: {}, assign: {}, rating: 5, notes: "", _ts: 0
+};
+let state = structuredClone(EMPTY);
+let history = [];
+let deletedIds = [];
+
+// Stato solo locale (non condiviso)
+const ui = { tab: "plan", shopView: "persone", filter: "Tutti", open: new Set(), confirmFriend: null, confirmDinner: null, confirmUnlock: false, canWrite: true };
+const clientId = Math.random().toString(36).slice(2, 10);
+
+// ---------- Utilità ----------
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, ch => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[ch]));
+const people = () => Math.max(1, state.active.length);
+const fmtQty = v => { const r = Math.round(v * 10) / 10; return Number.isInteger(r) ? String(r) : r.toFixed(1).replace(".", ","); };
+const eur = v => v.toFixed(2).replace(".", ",");
+const today = () => new Date().toISOString().slice(0, 10);
+const fmtDate = d => { try { return new Date(d + "T12:00:00").toLocaleDateString("it-IT", { day: "numeric", month: "short", year: "numeric" }); } catch { return d; } };
+let toastTimer;
+function toast(msg) { const t = $("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), 2600); }
+function isObj(v) { return v && typeof v === "object" && !Array.isArray(v); }
+function merge(a, b) { const out = { ...a }; for (const k in b) out[k] = isObj(b[k]) && isObj(a[k]) ? { ...a[k], ...b[k] } : b[k]; return out; }
+
+// Codifica/decodifica snapshot compatto per link condivisi (#s=...)
+function encodeSnap(obj) {
+  try {
+    const json = JSON.stringify(obj);
+    const bytes = new TextEncoder().encode(json);
+    let bin = "";
+    bytes.forEach(b => bin += String.fromCharCode(b));
+    return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  } catch { return ""; }
+}
+function decodeSnap(str) {
+  try {
+    const b64 = str.replace(/-/g, "+").replace(/_/g, "/");
+    const bin = atob(b64);
+    const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+    return JSON.parse(new TextDecoder().decode(bytes));
+  } catch { return null; }
+}
+
+// ---------- Gestione Stanza / Gruppo ----------
+function cleanRoom(r) {
+  return String(r || "").toLowerCase().trim().replace(/[^a-z0-9_-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "") || "club-buongustai";
+}
+function getInitialRoom() {
+  const params = new URLSearchParams(location.search);
+  const fromUrl = params.get("g");
+  if (fromUrl) {
+    const cleaned = cleanRoom(fromUrl);
+    try { localStorage.setItem("passaporto_room", cleaned); } catch {}
+    return cleaned;
+  }
+  try { return cleanRoom(localStorage.getItem("passaporto_room") || "club-buongustai"); } catch { return "club-buongustai"; }
+}
+let roomId = getInitialRoom();
+
+// ---------- Archivio: Cloud Real-Time (ntfy SSE + Bytebin) + localStorage + compatibilità Claude ----------
+const store = {
+  db: null, ref: null, exists: false, pending: null, full: false, timer: null, writing: false,
+  es: null, bc: null, reconnectTimer: null,
+
+  storageKeys() {
+    return {
+      state: `passaporto_state_${roomId}`,
+      history: `passaporto_history_${roomId}`,
+      deleted: `passaporto_deleted_${roomId}`
+    };
+  },
+
+  topicUrl(suffix = "") {
+    return `https://ntfy.sh/passaporto_gastro_v2_${roomId}${suffix}`;
+  },
+
+  loadLocal() {
+    const k = this.storageKeys();
+    try {
+      // Migrazione automatica da eventuale versione precedente senza suffisso stanza
+      const rawS = localStorage.getItem(k.state) || (roomId === "club-buongustai" ? localStorage.getItem("passaporto_state") : null) || "{}";
+      state = { ...structuredClone(EMPTY), ...JSON.parse(rawS) };
+    } catch { state = structuredClone(EMPTY); }
+    try {
+      const rawH = localStorage.getItem(k.history) || (roomId === "club-buongustai" ? localStorage.getItem("passaporto_history") : null) || "[]";
+      history = JSON.parse(rawH);
+    } catch { history = []; }
+    try {
+      deletedIds = JSON.parse(localStorage.getItem(k.deleted) || "[]");
+    } catch { deletedIds = []; }
+  },
+
+  saveLocal() {
+    const k = this.storageKeys();
+    try {
+      localStorage.setItem(k.state, JSON.stringify(state));
+      localStorage.setItem(k.history, JSON.stringify(history));
+      localStorage.setItem(k.deleted, JSON.stringify(deletedIds));
+    } catch {}
+  },
+
+  applyIncoming(payload, fromUrl = false) {
+    if (!payload || typeof payload !== "object") return false;
+    let changed = false;
+
+    if (Array.isArray(payload.d)) {
+      const newDel = new Set([...deletedIds, ...payload.d]);
+      if (newDel.size !== deletedIds.length) {
+        deletedIds = [...newDel];
+        changed = true;
+      }
+    }
+
+    if (Array.isArray(payload.h)) {
+      const map = new Map();
+      [...history, ...payload.h].forEach(item => {
+        if (item && item.id && !deletedIds.includes(item.id)) map.set(item.id, item);
+      });
+      const mergedH = [...map.values()].sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")) || String(b.savedAt || "").localeCompare(String(a.savedAt || "")));
+      if (JSON.stringify(mergedH) !== JSON.stringify(history)) {
+        history = mergedH;
+        changed = true;
+      }
+    } else if (deletedIds.length) {
+      const filtered = history.filter(h => !deletedIds.includes(h.id));
+      if (filtered.length !== history.length) {
+        history = filtered;
+        changed = true;
+      }
+    }
+
+    if (payload.s && typeof payload.s === "object") {
+      const inTs = Number(payload.s._ts) || 0;
+      const curTs = Number(state._ts) || 0;
+      const isLocalEmpty = !state.friends.length && !state.country && !state.proposals.length;
+      if (inTs >= curTs || (fromUrl && isLocalEmpty)) {
+        const nextState = { ...structuredClone(EMPTY), ...payload.s, _ts: Math.max(inTs, curTs) };
+        if (JSON.stringify(nextState) !== JSON.stringify(state)) {
+          state = this.pending ? merge(nextState, this.pending) : nextState;
+          changed = true;
+        }
+      }
+    }
+
+    if (changed) {
+      this.saveLocal();
+      render();
+    }
+    return changed;
+  },
+
+  async init() {
+    $("roomLabel").textContent = roomId;
+    $("roomInput").value = roomId;
+
+    // 1. Verifica se siamo dentro Claude Artifacts
+    try { this.db = window.claude?.use ? await window.claude.use("db") : null; } catch { this.db = null; }
+    if (this.db) {
+      setSync(true, "Condiviso su Claude");
+      try {
+        const user = await window.claude.use("user");
+        const can = user ? await user.can("data.write") : null;
+        if (can === false) setReadOnly();
+      } catch {}
+      this.ref = this.db.doc("club/state");
+      this.ref.onSnapshot(snap => {
+        this.exists = snap.exists;
+        const remote = snap.exists ? { ...EMPTY, ...snap.data() } : structuredClone(EMPTY);
+        if (!(this.full && this.pending)) state = this.pending ? merge(remote, this.pending) : remote;
+        render();
+      }, () => setSync(false, "Connessione persa: ricarica la pagina"));
+      this.db.collection("dinners").orderBy("date", "desc").onSnapshot(snap => {
+        history = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        render();
+      }, () => {});
+      return;
+    }
+
+    // 2. Modalità App Web Interattiva Condivisa (fuori da Claude)
+    this.loadLocal();
+
+    // Importa eventuale snapshot presente nell'URL (#s=...)
+    if (location.hash.startsWith("#s=")) {
+      const snap = decodeSnap(location.hash.slice(3));
+      if (snap) this.applyIncoming(snap, true);
+      window.history.replaceState(null, "", location.pathname + location.search);
+    }
+
+    render();
+
+    // Sincronizzazione istantanea tra schede dello stesso browser
+    try {
+      this.bc?.close();
+      this.bc = new BroadcastChannel(`passaporto_${roomId}`);
+      this.bc.onmessage = e => { if (e.data) this.applyIncoming(e.data); };
+    } catch {}
+
+    await this.connectCloud();
+  },
+
+  async connectCloud() {
+    if (this.db) return;
+    clearTimeout(this.reconnectTimer);
+    try { this.es?.close(); } catch {}
+
+    setSync(false, "Connessione al gruppo…");
+
+    // Scarica gli ultimi messaggi salvati sul canale del gruppo
+    let cloudHadData = false;
+    let maxCloudTs = 0;
+    let maxCloudHist = 0;
+    try {
+      const res = await fetch(this.topicUrl("/json?poll=1&since=all"), { cache: "no-store" });
+      if (res.ok) {
+        const text = await res.text();
+        const lines = text.trim().split("\n").filter(Boolean);
+        for (const line of lines) {
+          try {
+            const evt = JSON.parse(line);
+            if (evt.event === "message" && evt.message) {
+              const msg = JSON.parse(evt.message);
+              if (msg.type === "sync") {
+                cloudHadData = true;
+                maxCloudTs = Math.max(maxCloudTs, Number(msg.ts) || 0);
+                maxCloudHist = Math.max(maxCloudHist, Number(msg.hLen) || 0);
+                await this.handleSyncMsg(msg);
+              }
+            }
+          } catch {}
+        }
+      }
+    } catch {}
+
+    // Se questo dispositivo ha dati più aggiornati del cloud (es. riapertura dopo 15 giorni), riallinea subito il cloud
+    const localHasData = (state._ts > 0 || state.friends.length > 0 || history.length > 0);
+    if (localHasData && (!cloudHadData || state._ts > maxCloudTs || history.length > maxCloudHist)) {
+      this.pushCloud();
+    }
+
+    // Apri lo stream in tempo reale (SSE)
+    try {
+      const es = new EventSource(this.topicUrl("/sse"));
+      this.es = es;
+      es.onopen = () => {
+        setSync(true, `Live · ${roomId}`);
+      };
+      es.onmessage = async e => {
+        try {
+          const evt = JSON.parse(e.data);
+          if (evt.event !== "message" || !evt.message) return;
+          const msg = JSON.parse(evt.message);
+          if (msg.c === clientId) return;
+          if (msg.type === "sync") {
+            await this.handleSyncMsg(msg);
+          } else if (msg.type === "hello") {
+            if ((state._ts || 0) > (msg.ts || 0) || history.length > (msg.hLen || 0)) {
+              this.pushCloud();
+            }
+          }
+        } catch {}
+      };
+      es.onerror = () => {
+        setSync(false, "Riconnessione…");
+        try { es.close(); } catch {}
+        this.reconnectTimer = setTimeout(() => this.connectCloud(), 6000);
+      };
+    } catch {
+      setSync(false, "Solo su questo dispositivo");
+    }
+  },
+
+  async handleSyncMsg(msg) {
+    if (msg.data) {
+      this.applyIncoming(msg.data);
+    } else if (msg.key) {
+      try {
+        const r = await fetch(`https://bytebin.lucko.me/${msg.key}`);
+        if (r.ok) {
+          const data = await r.json();
+          this.applyIncoming(data);
+        }
+      } catch {}
+    }
+  },
+
+  snapshotPayload() {
+    return { s: state, h: history, d: deletedIds };
+  },
+
+  async pushCloud() {
+    if (this.db) return;
+    const snap = this.snapshotPayload();
+    try { this.bc?.postMessage(snap); } catch {}
+    const envelope = {
+      type: "sync",
+      c: clientId,
+      ts: state._ts || Date.now(),
+      hLen: history.length,
+      data: snap
+    };
+    let body = JSON.stringify(envelope);
+
+    // Se il pacchetto supera 3500 byte (es. storico molto lungo), appoggia il payload completo su Bytebin
+    if (body.length > 3500) {
+      try {
+        const r = await fetch("https://bytebin.lucko.me/post", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(snap)
+        });
+        if (r.ok) {
+          const { key } = await r.json();
+          body = JSON.stringify({ type: "sync", c: clientId, ts: state._ts || Date.now(), hLen: history.length, key });
+        }
+      } catch {}
+    }
+
+    try {
+      const res = await fetch(this.topicUrl(), { method: "POST", body });
+      if (res.ok) setSync(true, `Live · ${roomId}`);
+    } catch {
+      setSync(false, "Salvato sul telefono");
+    }
+  },
+
+  // fields: modifiche parziali. full: riscrive tutto il documento (serve per svuotare spese e spunte)
+  commit(fields, { full = false, delay = 250 } = {}) {
+    if (!ui.canWrite) { toast("Non hai il permesso di modificare"); return; }
+    const now = Date.now();
+    const withTs = { ...fields, _ts: now };
+    state = full ? { ...state, ...withTs } : merge(state, withTs);
+    this.saveLocal();
+    render();
+
+    if (this.db) {
+      if (full) this.full = true;
+      this.pending = full ? { ...(this.pending || {}), ...withTs } : merge(this.pending || {}, withTs);
+      clearTimeout(this.timer);
+      this.timer = setTimeout(() => this.flushClaude(), delay);
+      return;
+    }
+
+    clearTimeout(this.timer);
+    this.timer = setTimeout(() => this.pushCloud(), delay);
+  },
+
+  async flushClaude() {
+    if (this.writing || !this.pending) return;
+    this.writing = true;
+    const patch = this.pending, full = this.full || !this.exists;
+    this.pending = null; this.full = false;
+    try {
+      if (full) await this.ref.set(JSON.parse(JSON.stringify(state)));
+      else await this.ref.update(patch);
+      this.exists = true;
+    } catch (e) {
+      if (e?.code === "invalid_argument") setReadOnly();
+      else toast("Salvataggio non riuscito, riprova");
+    }
+    this.writing = false;
+    if (this.pending) this.flushClaude();
+  },
+
+  async addDinner(rec) {
+    if (this.db) {
+      await this.db.collection("dinners").add(rec);
+      return;
+    }
+    history.unshift({ id: `${Date.now()}_${ clientId.slice(0, 4) }`, ...rec });
+    state._ts = Date.now();
+    this.saveLocal();
+    render();
+    await this.pushCloud();
+  },
+
+  async deleteDinner(id) {
+    if (this.db) {
+      await this.db.doc("dinners/" + id).delete();
+      return;
+    }
+    history = history.filter(h => h.id !== id);
+    if (!deletedIds.includes(id)) deletedIds.push(id);
+    state._ts = Date.now();
+    this.saveLocal();
+    render();
+    await this.pushCloud();
+  }
+};
+
+function setSync(live, text) {
+  $("sync").classList.toggle("live", live);
+  $("syncText").textContent = text || (live ? `Live · ${roomId}` : "Solo locale");
+}
+function setReadOnly() {
+  ui.canWrite = false;
+  $("readonlyBanner").hidden = false;
+  document.querySelectorAll("main input, main select, main button:not(.tab):not(.filter):not(.how):not([data-view]):not([data-copy-person]):not(#copyShop)").forEach(el => el.disabled = true);
+}
+
+// ---------- Condivisione Link e WhatsApp ----------
+function buildShareUrl() {
+  const base = location.origin && location.origin !== "null"
+    ? `${location.origin}${location.pathname}`
+    : "https://eliocaiaffa.github.io/passaporto-gastronomico/";
+  const snap = encodeSnap(store.snapshotPayload());
+  return `${base}?g=${encodeURIComponent(roomId)}${snap ? `#s=${snap}` : ""}`;
+}
+
+function buildWhatsAppMessage() {
+  const url = buildShareUrl();
+  const c = byId(state.country);
+  const when = state.date ? fmtDate(state.date) : "da fissare";
+  const where = state.host ? ` a ${state.host}` : "";
+  const who = state.active.length ? `\n👥 Presenti (${state.active.length}): ${state.active.join(", ")}` : "";
+  const dest = c ? `\n✈️ Tappa scelta: *${c.flag} ${c.name}*` : (state.proposals.length ? `\n🎲 Nazioni estratte: ${state.proposals.map(id => byId(id)).filter(Boolean).map(x => `${x.flag} ${x.name}`).join(", ")}` : "");
+  return `🛂 *PASSAPORTO GASTRONOMICO*\n📅 Prossima cena: *${when}*${where}${dest}${who}\n\n👉 Apri il passaporto interattivo per segnarti presente, scegliere i piatti, spuntare la spesa e dividere i conti:\n${url}`;
+}
+
+// ---------- Rendering ----------
+function render() {
+  renderFriends(); renderVisas(); renderMenu(); renderShop(); renderExpenses(); renderStars(); renderHistory(); syncInputs();
+  if (!ui.canWrite) setReadOnly();
+}
+
+function syncInputs() {
+  const set = (id, v) => { const el = $(id); if (document.activeElement !== el && el.value !== v) el.value = v; };
+  set("dinnerDate", state.date || today());
+  set("dinnerHost", state.host || "");
+  set("dinnerNotes", state.notes || "");
+  $("historyCount").textContent = history.length;
+  const n = state.excluded.length;
+  $("mrz").textContent = `P<ITA<<TIMBRI<${String(n).padStart(2, "0")}<<NAZIONI<${COUNTRIES.length}<<OSPITI<${String(state.active.length).padStart(2, "0")}<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<`;
+}
+
+function renderFriends() {
+  const box = $("friends");
+  if (!state.friends.length) {
+    box.innerHTML = `<p class="empty" style="padding:8px 0; text-align:left">Nessuno nel gruppo per ora. Aggiungi il primo nome qui sotto.</p>`;
+  } else {
+    box.innerHTML = state.friends.map(f => {
+      if (ui.confirmFriend === f) {
+        return `<span class="chip confirm"><span>Togli ${esc(f)}?</span><button class="yes" data-del-yes="${esc(f)}">Sì, elimina</button><button data-del-no>No</button></span>`;
+      }
+      const on = state.active.includes(f);
+      return `<span class="chip ${on ? "on" : ""}"><button data-toggle="${esc(f)}" aria-pressed="${on}">${on ? "✓" : "+"} ${esc(f)}</button><button class="x" data-del="${esc(f)}" aria-label="Elimina ${esc(f)} dal gruppo">×</button></span>`;
+    }).join("");
+  }
+  const n = state.active.length;
+  $("peopleBadge").textContent = `${n} ${n === 1 ? "presente" : "presenti"}`;
+  $("menuPeople").textContent = people();
+  $("shopPeople").textContent = people();
+}
+
+function renderVisas() {
+  const box = $("visas");
+  const props = state.proposals.map(byId).filter(Boolean);
+  if (!props.length) {
+    box.innerHTML = `<p class="empty" style="grid-column:1/-1">Ancora nessuna estrazione. Premi <b>Estrai 3 nazioni</b> per vedere le proposte.</p>`;
+  } else {
+    box.innerHTML = props.map(c => `
+      <button class="visa ${state.country === c.id ? "on" : ""}" data-country="${c.id}">
+        ${state.country === c.id ? `<span class="seal">SCELTA</span>` : ""}
+        <span class="flag">${c.flag}</span>
+        <h3>${esc(c.name)}</h3>
+        <p>${esc(c.tagline)}</p>
+        <span class="meta">${c.dishes.length} ricette</span>
+      </button>`).join("");
+  }
+  const done = state.excluded.length;
+  $("progressText").textContent = `${done}/${COUNTRIES.length}`;
+  $("progressBar").style.width = `${(done / COUNTRIES.length) * 100}%`;
+}
+
+function renderMenu() {
+  const c = byId(state.country);
+  $("menuPage").hidden = !c;
+  if (!c) return;
+  $("menuTitle").textContent = `${c.flag} ${c.name}`;
+  const cats = ["Tutti", ...new Set(c.dishes.map(d => d.category))];
+  if (!cats.includes(ui.filter)) ui.filter = "Tutti";
+  $("filters").innerHTML = cats.map(cat => `<button class="filter ${ui.filter === cat ? "on" : ""}" data-filter="${esc(cat)}">${esc(cat)}</button>`).join("");
+  const n = people();
+  const list = c.dishes.filter(d => ui.filter === "Tutti" || d.category === ui.filter);
+  $("dishes").innerHTML = list.map(d => {
+    const on = state.dishes.includes(d.id), open = ui.open.has(d.id);
+    return `
+      <article class="dish ${on ? "on" : ""}">
+        <button class="tick" data-dish="${d.id}" aria-pressed="${on}" aria-label="${on ? "Togli" : "Scegli"} ${esc(d.name)}">${on ? "✓" : ""}</button>
+        <div class="dish-top"><h4 data-dish="${d.id}">${esc(d.name)}</h4><span class="cat">${esc(d.category)} · ${esc(d.time)}</span></div>
+        <div class="ings">${d.ingredients.map(i => `<span class="ing">${esc(i.name)} <b>${fmtQty(i.qty * n)} ${esc(i.unit)}</b></span>`).join("")}</div>
+        <div><button class="how" data-how="${d.id}" aria-expanded="${open}">${open ? "Nascondi procedimento" : "Procedimento"}</button>${open ? `<p class="steps">${esc(d.steps)}</p>` : ""}</div>
+      </article>`;
+  }).join("");
+  const k = state.dishes.filter(id => c.dishes.some(d => d.id === id)).length;
+  $("dishCount").textContent = `${k} ${k === 1 ? "scelto" : "scelti"}`;
+}
+
+// Prezzi indicativi, servono solo a dividere la spesa in parti simili. g e ml: €/kg o €/l; il resto: € al pezzo.
+const PRICES = [
+  [/zafferano/, 4000], [/pinoli/, 60], [/jam[oó]n|chorizo|morcilla|paté/, 28],
+  [/gamber|scampi|calamari|cozze|polpo|frutti di mare|vongole/, 18],
+  [/salmone|spigola|ombrina|pesce|sgombro|tranci/, 20],
+  [/filetto di manzo|controfiletto|scamone|entrec/, 22], [/cuore/, 10], [/agnello/, 16],
+  [/manzo|macinato/, 12], [/maiale|pancetta|lonza|pancia/, 10], [/pollo|sovracosce|cosce|ali /, 9],
+  [/feta|formaggio|paneer|halloumi|kefalotyri|pecorino|ricotta|labneh/, 14],
+  [/burro|ghee/, 11], [/arachidi|noci|mandorle/, 15], [/prugne/, 10],
+  [/berbere|garam|cumino|curcuma|paprika|sumac|ras el hanout|mitmita|gochugaru|za'atar|chili|cannella|masala|piment/, 40],
+  [/curry|gochujang|tamarindo|miso|tahina|ají|chipotle|ssamjang|kimchi|wasabi|maionese|salsa verde|tomatillo|melassa|okonomiyaki|danmuji|tteok|fish cake/, 14],
+  [/coriandolo|menta|prezzemolo|basilico|aneto|erbe|crescione/, 20], [/tofu/, 7], [/germogli|funghi|shiitake/, 8],
+  [/miele|zucchero|cioccolato/, 8], [/yogurt|panna acida/, 5], [/olive/, 10], [/pane|panko|pangrattato|baguette/, 4],
+  [/riso|farina|semola|bulgur|couscous|noodles|vermicelli|lenticchie|ceci|fagioli|tapioca|bucatini|ziti|fecola|amido|dangmyeon|chips/, 3.5]
+];
+const LIQUIDS = [
+  [/olio extra/, 9], [/latte di cocco/, 4], [/panna/, 5], [/latte/, 1.6], [/brodo|fumetto/, 2.5],
+  [/soia|pesce|worcestershire|mirin|ostriche|tonkatsu|melassa/, 9], [/olio/, 2.5],
+  [/vino|birra|sake|porto|aceto/, 6], [/acqua/, 0.4]
+];
+const PIECES = [
+  [/uova/, 0.3], [/lime|limoni/, 0.4], [/avocado/, 1.3], [/mango/, 1.6], [/tortillas|dischi|fogli di carta|foglie di vite/, 0.15],
+  [/pane arabo|pita/, 0.6], [/baguette|pannocchie|peperoncini ancho/, 1], [/peperoni|melanzane/, 1], [/banane|cipoll|cetrioli/, 0.35]
+];
+function unitPrice(name, unit) {
+  const n = name.toLowerCase();
+  const find = (rules, dflt) => (rules.find(([re]) => re.test(n)) || [0, dflt])[1];
+  if (unit === "g") return find(PRICES, 3) / 1000;
+  if (unit === "ml") return find(LIQUIDS, 3) / 1000;
+  if (unit === "spicchi") return 0.05;
+  if (unit === "fogli") return 0.3;
+  if (unit === "mazzo") return 1;
+  if (unit === "stelo") return 0.5;
+  return find(PIECES, 0.6);
+}
+// Quantità da comprare: pezzi interi, grammi e millilitri arrotondati per eccesso
+function buyQty(total, unit) {
+  if (unit === "g" || unit === "ml") return total < 20 ? Math.ceil(total) : Math.ceil(total / 10) * 10;
+  return Math.ceil(total - 1e-9);
+}
+const fmtBuy = (q, unit) => (unit === "g" || unit === "ml") && q >= 1000 ? `${fmtQty(q / 1000)} ${unit === "g" ? "kg" : "l"}` : `${fmtQty(q)} ${unit}`;
+
+function shoppingList() {
+  const c = byId(state.country);
+  if (!c) return [];
+  const n = people(), map = {};
+  c.dishes.filter(d => state.dishes.includes(d.id)).forEach(d => d.ingredients.forEach(i => {
+    const key = (i.name + "|" + i.unit).toLowerCase();
+    map[key] ??= { key, name: i.name, unit: i.unit, total: 0 };
+    map[key].total += i.qty * n;
+  }));
+  return Object.values(map).map(i => {
+    const buy = buyQty(i.total, i.unit);
+    return { ...i, buy, cost: buy * unitPrice(i.name, i.unit) };
+  }).sort((a, b) => a.name.localeCompare(b.name, "it"));
+}
+
+// Divide gli ingredienti tra i presenti: prima le assegnazioni fatte a mano, poi il più caro a chi ha speso meno finora.
+function splitShopping(list) {
+  const buckets = state.active.map(name => ({ name, items: [], cost: 0 }));
+  if (!buckets.length) return [];
+  const rest = [];
+  list.forEach(i => {
+    const b = buckets.find(b => b.name === state.assign?.[i.key]);
+    if (b) { b.items.push(i); b.cost += i.cost; } else rest.push(i);
+  });
+  rest.sort((x, y) => y.cost - x.cost || x.name.localeCompare(y.name, "it")).forEach(i => {
+    const b = buckets.reduce((m, b) => b.cost < m.cost - 1e-9 ? b : m);
+    b.items.push(i); b.cost += i.cost;
+  });
+  buckets.forEach(b => b.items.sort((x, y) => x.name.localeCompare(y.name, "it")));
+  return buckets;
+}
+
+function buyRow(i, owner) {
+  const done = !!state.bought[i.key];
+  const select = owner ? `<select data-assign="${esc(i.key)}" aria-label="Chi compra ${esc(i.name)}">${state.active.map(p => `<option value="${esc(p)}" ${p === owner ? "selected" : ""}>${p === owner ? "Lo compra " + esc(p) + " · cambia" : "Passa a " + esc(p)}</option>`).join("")}</select>` : "";
+  return `<div class="buy-row ${done ? "done" : ""}"><label><input type="checkbox" data-buy="${esc(i.key)}" ${done ? "checked" : ""}><span class="name">${esc(i.name)}</span></label><span class="qty">${fmtBuy(i.buy, i.unit)}</span>${select}</div>`;
+}
+
+function renderShop() {
+  const c = byId(state.country), list = shoppingList();
+  $("shopTitle").textContent = c ? `Cosa comprare · ${c.flag} ${c.name}` : "Cosa comprare";
+  document.querySelectorAll("[data-view]").forEach(b => b.classList.toggle("on", b.dataset.view === ui.shopView));
+  const perPerson = ui.shopView === "persone" && state.active.length > 0;
+  $("shopHint").hidden = !(list.length && perPerson);
+  if (!list.length) {
+    $("shop").innerHTML = `<p class="empty">La lista appare qui quando scegli una nazione e almeno un piatto in <b>Nuova cena</b>.</p>`;
+    return;
+  }
+  if (!perPerson) {
+    $("shop").innerHTML = `<div class="buyer">${list.map(i => buyRow(i)).join("")}</div>`;
+    return;
+  }
+  $("shop").innerHTML = `<div class="buyers">${splitShopping(list).map(b => `
+    <section class="buyer">
+      <div class="buyer-head"><h3>${esc(b.name)}</h3><span class="mono">${b.items.length} cose · ≈ € ${eur(b.cost)}</span></div>
+      ${b.items.length ? b.items.map(i => buyRow(i, b.name)).join("") : `<p class="hint" style="margin:4px 0">Niente da comprare questa volta: porta il vino.</p>`}
+      ${b.items.length ? `<button class="btn ghost" style="justify-self:start; padding-inline:0" data-copy-person="${esc(b.name)}">Copia la lista di ${esc(b.name)}</button>` : ""}
+    </section>`).join("")}</div>`;
+}
+
+let expKey = "";
+function renderExpenses() {
+  const box = $("expenses");
+  const key = state.active.join("|");
+  if (key !== expKey) {
+    expKey = key;
+    box.innerHTML = state.active.length ? state.active.map(f => `
+      <div class="exp-row"><b>${esc(f)}</b><span class="money"><span class="label">€</span>
+        <input class="input" type="number" inputmode="decimal" step="0.5" min="0" placeholder="0,00" data-exp="${esc(f)}" aria-label="Spesa di ${esc(f)}"></span></div>`).join("")
+      : `<p class="empty">Segna chi è presente in <b>Nuova cena</b> per dividere la spesa.</p>`;
+  }
+  box.querySelectorAll("[data-exp]").forEach(el => {
+    if (document.activeElement === el) return;
+    const v = state.expenses[el.dataset.exp];
+    el.value = v ? v : "";
+  });
+  const total = state.active.reduce((s, f) => s + (Number(state.expenses[f]) || 0), 0);
+  const per = total / people();
+  $("total").textContent = eur(total);
+  $("perHead").textContent = eur(per);
+  const debt = [], cred = [];
+  state.active.forEach(f => {
+    const d = (Number(state.expenses[f]) || 0) - per;
+    if (d < -0.005) debt.push({ f, a: -d }); else if (d > 0.005) cred.push({ f, a: d });
+  });
+  const tx = [];
+  let i = 0, j = 0;
+  while (i < debt.length && j < cred.length) {
+    const p = Math.min(debt[i].a, cred[j].a);
+    if (p >= 0.01) tx.push(`<div><b>${esc(debt[i].f)}</b> dà <b>€ ${eur(p)}</b> a <b>${esc(cred[j].f)}</b></div>`);
+    debt[i].a -= p; cred[j].a -= p;
+    if (debt[i].a < 0.01) i++;
+    if (cred[j].a < 0.01) j++;
+  }
+  $("settle").innerHTML = total ? (tx.join("") || `<div>Siete già pari, nessuno deve niente.</div>`) : "";
+}
+
+function renderStars() {
+  $("stars").innerHTML = [1, 2, 3, 4, 5].map(s => `<button class="${s <= state.rating ? "on" : ""}" data-star="${s}" aria-label="${s} stelle">★</button>`).join("") +
+    `<span class="mono" style="margin-left:8px; font-weight:700">${state.rating}/5</span>`;
+}
+
+function renderHistory() {
+  $("unlockArea").innerHTML = ui.confirmUnlock
+    ? `<span class="inline-confirm">Tutte le nazioni tornano estraibili. Confermi? <button class="btn primary" id="unlockYes">Sì</button><button class="btn" id="unlockNo">No</button></span>`
+    : `<button class="btn ghost" id="unlockBtn" ${state.excluded.length ? "" : "disabled"}>Rimetti in gioco tutte le nazioni</button>`;
+  if (!history.length) {
+    $("stamps").innerHTML = `<p class="empty" style="grid-column:1/-1">Nessun timbro per ora. Quando chiudete la prima cena da <b>Spesa e conti</b>, il timbro compare qui.</p>`;
+    return;
+  }
+  $("stamps").innerHTML = history.map(h => `
+    <article class="stamp">
+      <div class="stamp-head"><span class="flag">${h.flag || ""}</span><div><h3>${esc(h.countryName)}</h3><div class="date">${esc(fmtDate(h.date))} · ${esc(h.host)}</div></div></div>
+      <p><b>Menù:</b> ${esc((h.dishes || []).join(" · ") || "—")}</p>
+      <p><b>Presenti (${(h.participants || []).length}):</b> ${esc((h.participants || []).join(", "))}</p>
+      ${h.notes ? `<p class="note">“${esc(h.notes)}”</p>` : ""}
+      <div class="stamp-foot">
+        <span class="rating" aria-label="${h.rating} su 5">${"★".repeat(h.rating || 0)}${"☆".repeat(5 - (h.rating || 0))}</span>
+        <span class="mono">€ ${esc(h.perPerson)} a testa</span>
+      </div>
+      <div style="justify-self:end">${ui.confirmDinner === h.id
+        ? `<span class="inline-confirm">Eliminare questo timbro? <button class="btn primary" data-dinner-yes="${esc(h.id)}">Elimina</button><button class="btn" data-dinner-no>No</button></span>`
+        : `<button class="btn ghost" data-dinner-del="${esc(h.id)}">Elimina</button>`}</div>
+    </article>`).join("");
+}
+
+// ---------- Azioni ----------
+function draw() {
+  let pool = COUNTRIES.filter(c => !state.excluded.includes(c.id));
+  let excluded = state.excluded;
+  if (!pool.length) { pool = COUNTRIES; excluded = []; toast("Giro del mondo completato! Si riparte da capo."); }
+  const picked = [...pool].sort(() => Math.random() - 0.5).slice(0, 3).map(c => c.id);
+  store.commit({ proposals: picked, country: null, dishes: [], bought: {}, assign: {}, excluded }, { full: true, delay: 0 });
+}
+
+document.addEventListener("click", e => {
+  const t = e.target.closest("button, [data-dish]");
+  if (!t) return;
+  const d = t.dataset;
+  if (d.tab) return showTab(d.tab);
+  if (d.toggle) {
+    const f = d.toggle;
+    const active = state.active.includes(f) ? state.active.filter(x => x !== f) : [...state.active, f];
+    return store.commit({ active });
+  }
+  if (d.del) { ui.confirmFriend = d.del; return render(); }
+  if ("delNo" in d) { ui.confirmFriend = null; return render(); }
+  if (d.delYes) {
+    const f = d.delYes; ui.confirmFriend = null;
+    const expenses = { ...state.expenses }; delete expenses[f];
+    store.commit({ friends: state.friends.filter(x => x !== f), active: state.active.filter(x => x !== f), expenses }, { full: true, delay: 0 });
+    return toast(`${f} tolto dal gruppo`);
+  }
+  if (t.id === "drawBtn") return draw();
+  if (d.country) {
+    if (state.country === d.country) return;
+    ui.filter = "Tutti"; ui.open.clear();
+    return store.commit({ country: d.country, dishes: [], bought: {}, assign: {} }, { full: true, delay: 0 });
+  }
+  if (d.filter) { ui.filter = d.filter; return renderMenu(); }
+  if (d.how) { ui.open.has(d.how) ? ui.open.delete(d.how) : ui.open.add(d.how); return renderMenu(); }
+  if (d.dish) {
+    const dishes = state.dishes.includes(d.dish) ? state.dishes.filter(x => x !== d.dish) : [...state.dishes, d.dish];
+    return store.commit({ dishes });
+  }
+  if (t.id === "selectAll") { const c = byId(state.country); return c && store.commit({ dishes: c.dishes.map(x => x.id) }); }
+  if (t.id === "selectNone") return store.commit({ dishes: [] });
+  if (t.id === "copyShop") return copyShop();
+  if (d.copyPerson) return copyShop(d.copyPerson);
+  if (d.view) { ui.shopView = d.view; try { localStorage.setItem("passaporto_view", d.view); } catch {} return renderShop(); }
+  if (d.star) return store.commit({ rating: Number(d.star) });
+  if (t.id === "saveDinner") return saveDinner();
+  if (t.id === "unlockBtn") { ui.confirmUnlock = true; return renderHistory(); }
+  if (t.id === "unlockNo") { ui.confirmUnlock = false; return renderHistory(); }
+  if (t.id === "unlockYes") { ui.confirmUnlock = false; store.commit({ excluded: [] }, { full: true, delay: 0 }); return toast("Tutte le nazioni sono di nuovo in gioco"); }
+  if (d.dinnerDel) { ui.confirmDinner = d.dinnerDel; return renderHistory(); }
+  if ("dinnerNo" in d) { ui.confirmDinner = null; return renderHistory(); }
+  if (d.dinnerYes) { ui.confirmDinner = null; store.deleteDinner(d.dinnerYes).catch(() => toast("Eliminazione non riuscita")); }
+
+  // Azioni barra di condivisione e impostazioni
+  if (t.id === "sync" || t.id === "roomToggleBtn") {
+    const dr = $("roomDrawer");
+    dr.hidden = !dr.hidden;
+    return;
+  }
+  if (t.id === "saveRoomBtn") {
+    const next = cleanRoom($("roomInput").value);
+    roomId = next;
+    try { localStorage.setItem("passaporto_room", roomId); } catch {}
+    const url = new URL(location.href);
+    url.searchParams.set("g", roomId);
+    window.history.replaceState(null, "", url.pathname + url.search);
+    store.init();
+    toast(`Collegato al gruppo: ${roomId}`);
+    return;
+  }
+  if (t.id === "forceSyncBtn") {
+    store.pushCloud();
+    store.connectCloud();
+    toast("Sincronizzazione in corso…");
+    return;
+  }
+  if (t.id === "shareWaBtn") {
+    store.pushCloud();
+    const msg = buildWhatsAppMessage();
+    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
+    return;
+  }
+  if (t.id === "copyLinkBtn") {
+    store.pushCloud();
+    const url = buildShareUrl();
+    navigator.clipboard?.writeText(url).then(() => toast("Link del passaporto copiato! Mandalo agli amici")).catch(() => {
+      prompt("Copia questo link e invialo agli amici:", url);
+    });
+    return;
+  }
+  if (t.id === "themeBtn") {
+    const cur = document.documentElement.getAttribute("data-theme");
+    const next = cur === "dark" ? "light" : cur === "light" ? "" : "dark";
+    if (next) document.documentElement.setAttribute("data-theme", next);
+    else document.documentElement.removeAttribute("data-theme");
+    try { localStorage.setItem("passaporto_theme", next); } catch {}
+    toast(next === "dark" ? "Tema scuro" : next === "light" ? "Tema chiaro" : "Tema automatico");
+    return;
+  }
+  if (t.id === "exportBtn") {
+    const blob = new Blob([JSON.stringify({ roomId, state, history, exportedAt: new Date().toISOString() }, null, 2)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `passaporto-${roomId}-${today()}.json`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+    toast("Backup scaricato");
+    return;
+  }
+  if (t.id === "importBtn") {
+    $("importFile").click();
+    return;
+  }
+});
+
+$("importFile").addEventListener("change", async e => {
+  const file = e.target.files?.[0];
+  if (!file) return;
+  try {
+    const data = JSON.parse(await file.text());
+    if (data.state || data.history) {
+      store.applyIncoming({ s: { ...(data.state || state), _ts: Date.now() }, h: data.history || [] }, true);
+      await store.pushCloud();
+      toast("Backup ripristinato e sincronizzato col gruppo");
+    }
+  } catch { toast("File non valido"); }
+  e.target.value = "";
+});
+
+document.addEventListener("change", e => {
+  const el = e.target;
+  if (el.dataset.buy) store.commit({ bought: { [el.dataset.buy]: el.checked } });
+  if (el.dataset.assign) store.commit({ assign: { [el.dataset.assign]: el.value } }, { delay: 0 });
+  if (el.id === "dinnerDate") store.commit({ date: el.value });
+});
+document.addEventListener("input", e => {
+  const el = e.target;
+  if (el.dataset.exp) store.commit({ expenses: { [el.dataset.exp]: parseFloat(el.value) || 0 } }, { delay: 700 });
+  if (el.id === "dinnerHost") store.commit({ host: el.value }, { delay: 700 });
+  if (el.id === "dinnerNotes") store.commit({ notes: el.value }, { delay: 700 });
+});
+
+$("addFriendForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const input = $("newFriend"), name = input.value.trim().replace(/\s+/g, " ");
+  if (!name) return;
+  if (state.friends.some(f => f.toLowerCase() === name.toLowerCase())) return toast(`${name} è già nel gruppo`);
+  input.value = "";
+  store.commit({ friends: [...state.friends, name], active: [...state.active, name] }, { delay: 0 });
+});
+
+function showTab(tab) {
+  ui.tab = tab;
+  ["plan", "shop", "history"].forEach(k => {
+    $("sec-" + k).hidden = k !== tab;
+    $("tab-" + k).setAttribute("aria-selected", String(k === tab));
+  });
+  try { localStorage.setItem("passaporto_tab", tab); } catch {}
+  window.scrollTo({ top: 0 });
+}
+
+async function copyShop(onlyPerson) {
+  const c = byId(state.country), list = shoppingList();
+  if (!c || !list.length) return toast("Scegli prima una nazione e i piatti");
+  const line = i => `${state.bought[i.key] ? "✅" : "•"} ${i.name}: *${fmtBuy(i.buy, i.unit)}*\n`;
+  let text = `🛒 *SPESA CENA ${c.flag} ${c.name.toUpperCase()}*\n👥 ${state.active.length} persone: ${state.active.join(", ")}\n`;
+  if (ui.shopView === "persone" && state.active.length) {
+    splitShopping(list).filter(b => b.items.length && (!onlyPerson || b.name === onlyPerson)).forEach(b => {
+      text += `\n*${b.name}* compra:\n` + b.items.map(line).join("");
+    });
+  } else {
+    text += "\n" + list.map(line).join("");
+  }
+  try { await navigator.clipboard.writeText(text); toast(onlyPerson ? `Lista di ${onlyPerson} copiata` : "Lista copiata: incollala nel gruppo WhatsApp"); }
+  catch {
+    const ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); toast("Lista copiata"); } catch { toast("Copia non riuscita: seleziona il testo a mano"); }
+    ta.remove();
+  }
+}
+
+async function saveDinner() {
+  const c = byId(state.country);
+  if (!c) return toast("Scegli prima la nazione della cena");
+  if (!state.active.length) return toast("Segna almeno un presente");
+  const total = state.active.reduce((s, f) => s + (Number(state.expenses[f]) || 0), 0);
+  const rec = {
+    date: state.date || today(), host: state.host || "Casa di amici",
+    countryId: c.id, countryName: c.name, flag: c.flag,
+    participants: [...state.active],
+    dishes: c.dishes.filter(d => state.dishes.includes(d.id)).map(d => d.name),
+    totalSpent: eur(total), perPerson: eur(total / people()),
+    rating: state.rating, notes: (state.notes || "").trim(), savedAt: new Date().toISOString()
+  };
+  $("saveDinner").disabled = true;
+  try {
+    await store.addDinner(rec);
+    const excluded = state.excluded.includes(c.id) ? state.excluded : [...state.excluded, c.id];
+    store.commit({ excluded, proposals: [], country: null, dishes: [], expenses: {}, bought: {}, assign: {}, notes: "", host: "", date: "", rating: 5 }, { full: true, delay: 0 });
+    toast(`Timbro ${c.flag} ${c.name} aggiunto al passaporto`);
+    showTab("history");
+  } catch { toast("Non sono riuscito a salvare la cena, riprova"); }
+  $("saveDinner").disabled = !ui.canWrite;
+}
+
+// ---------- Installazione PWA e Riattivazione ----------
+let deferredPrompt = null;
+window.addEventListener("beforeinstallprompt", e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  $("installPwaBtn").hidden = false;
+});
+$("installPwaBtn").addEventListener("click", async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  $("installPwaBtn").hidden = true;
+});
+
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible" && !store.db) {
+    store.connectCloud();
+  }
+});
+
+// ---------- Avvio ----------
+try { const th = localStorage.getItem("passaporto_theme"); if (th) document.documentElement.setAttribute("data-theme", th); } catch {}
+try { const t = localStorage.getItem("passaporto_tab"); if (t) showTab(t); } catch {}
+try { const v = localStorage.getItem("passaporto_view"); if (v) ui.shopView = v; } catch {}
+render();
+store.init();
+</script>
+</body>
+</html>
